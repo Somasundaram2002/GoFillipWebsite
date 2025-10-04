@@ -1,8 +1,7 @@
 pipeline {
   agent any
-  options { timestamps(); timeout(time: 20, unit: 'MINUTES'); ansiColor('xterm') }
+  options { timestamps(); timeout(time: 20, unit: 'MINUTES') }
 
-  // Optional: set BASE_URL here, or pass from the job as a parameter/environment variable
   environment {
     MAVEN_OPTS = "-Dmaven.test.failure.ignore=false"
     // BASE_URL = "https://gofillip.in"
@@ -16,7 +15,6 @@ pipeline {
     stage('Set up Tools') {
       steps {
         script {
-          // Ensure Maven and JDK are configured in Global Tool Configuration with these names
           def mvnHome = tool name: 'M3', type: 'maven'
           def jdkHome = tool name: 'JDK17', type: 'jdk'
           env.PATH = "${mvnHome}/bin:${jdkHome}/bin:${env.PATH}"
