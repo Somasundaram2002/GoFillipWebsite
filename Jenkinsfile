@@ -22,24 +22,26 @@ pipeline {
       }
     }
 
-    stage('Install Chrome (Linux agents)') {
-      when { expression { isUnix() } }
-      steps {
-        sh '''
-          set -e
-          if ! command -v google-chrome >/dev/null 2>&1; then
-            echo "[CI] Installing Google Chrome..."
-            sudo apt-get update -y
-            sudo apt-get install -y wget gnupg --no-install-recommends
-            wget -qO- https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-linux-signing-keyring.gpg
-            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux-signing-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-            sudo apt-get update -y
-            sudo apt-get install -y google-chrome-stable --no-install-recommends
-          fi
-          google-chrome --version || true
-        '''
-      }
-    }
+stage('Install Chrome (Linux)') {
+  when { expression { isUnix() } }
+  steps {
+    sh '''
+      set -e
+      if ! command -v google-chrome >/dev/null 2>&1; then
+        echo "[CI] Installing Google Chrome without sudo..."
+        apt-get update -y
+        apt-get install -y wget gnupg ca-certificates --no-install-recommends
+        install -d -m 0755 /etc/apt/keyrings
+        wget -qO /etc/apt/keyrings/google-chrome.gpg https://dl.google.com/linux/linux_signing_key.pub
+        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
+        apt-get update -y
+        apt-get install -y google-chrome-stable --no-install-recommends
+      fi
+      google-chrome --version || true
+    '''
+  }
+}
+
 
     stage('Build & Test (headless)') {
       steps {
