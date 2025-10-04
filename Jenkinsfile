@@ -2,10 +2,10 @@ pipeline {
   agent any
   options { timestamps(); timeout(time: 20, unit: 'MINUTES'); ansiColor('xterm') }
 
+  // Optional: set BASE_URL here, or pass from the job as a parameter/environment variable
   environment {
     MAVEN_OPTS = "-Dmaven.test.failure.ignore=false"
-    # Optional: set BASE_URL at job level or here
-    # BASE_URL = "https://your-app-url"
+    // BASE_URL = "https://gofillip.in"
   }
 
   stages {
@@ -13,20 +13,24 @@ pipeline {
       steps { checkout scm }
     }
 
-    stage('Set up JDK & Maven') {
+    stage('Set up Tools') {
       steps {
-        tool name: 'M3', type: 'maven'    // configure in Jenkins > Global Tool Configuration
-        tool name: 'JDK17', type: 'jdk'   // or JDK11 based on your pom
+        script {
+          // Ensure Maven and JDK are configured in Global Tool Configuration with these names
+          def mvnHome = tool name: 'M3', type: 'maven'
+          def jdkHome = tool name: 'JDK17', type: 'jdk'
+          env.PATH = "${mvnHome}/bin:${jdkHome}/bin:${env.PATH}"
+        }
       }
     }
 
-    stage('Install Chrome/Driver (Linux)') {
+    stage('Install Chrome (Linux agents)') {
       when { expression { isUnix() } }
       steps {
         sh '''
           set -e
           if ! command -v google-chrome >/dev/null 2>&1; then
-            echo "Installing Chrome..."
+            echo "[CI] Installing Google Chrome..."
             sudo apt-get update -y
             sudo apt-get install -y wget gnupg --no-install-recommends
             wget -qO- https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-linux-signing-keyring.gpg
@@ -34,6 +38,7 @@ pipeline {
             sudo apt-get update -y
             sudo apt-get install -y google-chrome-stable --no-install-recommends
           fi
+          google-chrome --version || true
         '''
       }
     }
@@ -44,10 +49,11 @@ pipeline {
           'CHROME_OPTS=--headless=new --no-sandbox --disable-dev-shm-usage --window-size=1920,1080',
         ]) {
           sh '''
+            set -e
             mvn -B -e clean test \
               -Dheadless=true \
               -Dchrome.options="$CHROME_OPTS" \
-              -DbaseUrl="${BASE_URL:-https://example.com}"
+              -DbaseUrl="${BASE_URL:-https://gofillip.in}"
           '''
         }
       }
