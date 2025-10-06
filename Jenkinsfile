@@ -2,13 +2,12 @@ pipeline {
 agent {
 docker {
 image 'selenium/standalone-chrome:latest'
-args '-u 1200:1200'
+args '--shm-size=2g -t'
+// optionally: args '--shm-size=2g -t -u 1000:1000'
 }
 }
-options { timestamps(); timeout(time: 20, unit: 'MINUTES') }
-environment {
-MAVEN_OPTS = "-Dmaven.test.failure.ignore=false"
-}
+options { timestamps(); timeout(time: 20, unit: "MINUTES") }
+environment { MAVEN_OPTS = "-Dmaven.test.failure.ignore=false" }
 stages {
 stage('Checkout') {
 steps { checkout scm }
@@ -16,7 +15,7 @@ steps { checkout scm }
 stage('Build & Test (headless)') {
 steps {
 sh '''
-set -e
+set -euxo pipefail
 google-chrome --version
 mvn -B clean test
 -Dheadless=true
