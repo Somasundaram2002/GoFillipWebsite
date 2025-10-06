@@ -16,7 +16,7 @@ public class AddToCart extends BaseClass{
     @Test
     public void add_to_cart() throws InterruptedException {
 
-        driver.findElement(By.xpath("//button[text()=\"Sign In\"]")).click();
+       new WebDriverWait(driver, Duration.ofSeconds(20)).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[normalize-space()='Sign In']"))).click();
         Thread.sleep(2000);
 
         Thread.sleep(2000);
