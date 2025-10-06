@@ -2,6 +2,7 @@ package org.example;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -10,75 +11,75 @@ import org.testng.annotations.Test;
 import java.time.Duration;
 import java.util.List;
 
-public class AddToCart extends BaseClass{
+public class AddToCart extends BaseClass {
 
-
-    @Test
-    public void add_to_cart() throws InterruptedException {
-
-       new WebDriverWait(driver, Duration.ofSeconds(20)).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[normalize-space()='Sign In']"))).click();
-        Thread.sleep(2000);
-
-        Thread.sleep(2000);
-
-        driver.findElement(By.id("identifier-field")).clear();
-        Thread.sleep(2000);
-        driver.findElement(By.id("identifier-field")).sendKeys("tsksomu11@gmail.com");
-        driver.findElement(By.xpath("//span[text()=\"Continue\"]")).click();
-        Thread.sleep(2000);
-
-
-        driver.findElement(By.id("password-field")).sendKeys("SomuAbcd@123");
-        driver.findElement(By.xpath("//span[text()=\"Continue\"]")).click();
-        Thread.sleep(2000);
-
-        driver.findElement(By.xpath("//img[@title=\"Somasundaram N\"]"));
-        System.out.println("Registered user signed in");
-        Thread.sleep(2000);
-
-        driver.findElement(By.xpath("//a[text()=\"Services\"]")).click();
-        Thread.sleep(2000);
-
-        WebElement element = driver.findElement(By.xpath("//h3[text()=\"Static Standard Website\"]"));
-
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element
-        );
-
-
-        String prod1 = driver.findElement(By.xpath("//h3[text()=\"Static Standard Website\"]")).getText();
-        String prod2 = driver.findElement(By.xpath("//h3[text()=\"Static Premium Website\"]")).getText();
-        String prod3 = driver.findElement(By.xpath("//h3[text()=\"Hybrid Minimal Application\"]")).getText();
-
-
-         // WebElement el = driver.findElement(By.xpath("//*[normalize-space(text())='" + text + "']"));
-
-        List<WebElement> addtocart = driver.findElements(By.xpath("//button[text()=\"Add to Cart\"]"));
-        addtocart.get(0).click();
-        addtocart.get(1).click();
-        addtocart.get(2).click();
-
-        Thread.sleep(3000);
-
-
-        WebElement cart = driver.findElement(By.xpath("//a[@rel='canonical' and contains(@href,'/Cart')]"));
-        cart.click();
-
-        try {
-             driver.findElement(By.xpath("//*[normalize-space(text())='" + prod1 + "']"));
-             driver.findElement(By.xpath("//*[normalize-space(text())='" + prod2 + "']"));
-             driver.findElement(By.xpath("//*[normalize-space(text())='" + prod3 + "']"));
-             System.out.println("Passed: Added product matches in cart");
-        } catch (Exception e) {
-            System.out.println("Failed: Added products not matches");
-            System.out.println(e);
-        }
-
-
-
-
-
-
-
-    }
+text
+private WebDriverWait wait() {
+    return new WebDriverWait(driver, Duration.ofSeconds(20));
 }
+
+private void waitForPageReady() {
+    wait().until(ExpectedConditions.jsReturnsValue("return document.readyState === 'complete'"));
+}
+
+@Test
+public void add_to_cart() {
+    // Wait for home loaded and open Sign In
+    waitForPageReady(); // ensure initial DOM is ready[3][4]
+    wait().until(ExpectedConditions.elementToBeClickable(By.xpath("//button[normalize-space(.)='Sign In']"))).click(); // robust text match[2][5]
+
+    // Email step
+    WebElement email = wait().until(ExpectedConditions.visibilityOfElementLocated(By.id("identifier-field")));
+    email.clear();
+    email.sendKeys("tsksomu11@gmail.com");
+    wait().until(ExpectedConditions.elementToBeClickable(By.xpath("//span[normalize-space(.)='Continue']"))).click(); // stable click[6][2]
+
+    // Password step
+    WebElement pwd = wait().until(ExpectedConditions.visibilityOfElementLocated(By.id("password-field")));
+    pwd.sendKeys("SomuAbcd@123");
+    wait().until(ExpectedConditions.elementToBeClickable(By.xpath("//span[normalize-space(.)='Continue']"))).click();
+
+    // Assert user avatar visible
+    wait().until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//img[@title='Somasundaram N']")));
+
+    // Navigate to Services
+    wait().until(ExpectedConditions.elementToBeClickable(By.xpath("//a[normalize-space(.)='Services']"))).click();
+    waitForPageReady();
+
+    // Scroll target card into view
+    WebElement targetCard = wait().until(ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//h3[normalize-space(.)='Static Standard Website']")));
+    ((JavascriptExecutor) driver).executeScript("arguments.scrollIntoView({behavior:'instant',block:'center'});", targetCard); // JS scroll[7][8]
+
+    // Read product names
+    String prod1 = wait().until(ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//h3[normalize-space(.)='Static Standard Website']"))).getText();
+    String prod2 = wait().until(ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//h3[normalize-space(.)='Static Premium Website']"))).getText();
+    String prod3 = wait().until(ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//h3[normalize-space(.)='Hybrid Minimal Application']"))).getText();
+
+    // Add three items to cart with guard
+    List<WebElement> addButtons = wait().until(ExpectedConditions.numberOfElementsToBeMoreThan(
+            By.xpath("//button[normalize-space(.)='Add to Cart']"), 2)); // ensure at least 3[9][10]
+    addButtons.get(0).click();
+    addButtons.get(1).click();
+    addButtons.get(2).click();
+
+    // Open cart
+    WebElement cart = wait().until(ExpectedConditions.elementToBeClickable(
+            By.xpath("//a[@rel='canonical' and contains(@href,'/Cart')]")));
+    cart.click();
+    waitForPageReady();
+
+    // Verify items present in cart
+    wait().until(ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//*[normalize-space(text())='" + prod1 + "']")));
+    wait().until(ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//*[normalize-space(text())='" + prod2 + "']")));
+    wait().until(ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//*[normalize-space(text())='" + prod3 + "']")));
+    System.out.println("Passed: Added product matches in cart");
+}
+}
+
