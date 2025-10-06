@@ -27,12 +27,19 @@ pipeline {
             steps {
                 sh '''
                 set -eu
+
                 echo "Chrome version:"
                 google-chrome --version
+
                 echo "Chromedriver version:"
                 chromedriver --version
+
                 echo "Maven version:"
                 mvn --version
+
+                # Wait a few seconds to let Chrome start properly
+                echo "Waiting for Chrome to initialize..."
+                sleep 5
 
                 # Run only AddToCart test
                 mvn -B clean test \
@@ -47,7 +54,6 @@ pipeline {
 
     post {
         always {
-            // Publish test results and screenshots
             junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
             archiveArtifacts allowEmptyArchive: true, artifacts: 'target/screenshots/**/*.png'
         }
