@@ -1,60 +1,41 @@
 pipeline {
     agent {
-    docker {
-        image 'somasundaram2002/my-maven-chrome:latest'
-        args '--shm-size=2g'
+        docker {
+            image 'somasundaram2002/my-maven-chrome:latest'  // Your custom Docker image with Maven + Chrome + Chromedriver
+            args '--shm-size=2g -t'
+        }
     }
-}
-
-
     options { 
-        timestamps()
+        timestamps() 
         timeout(time: 20, unit: 'MINUTES') 
     }
-
     environment {
         MAVEN_OPTS = '-Dmaven.test.failure.ignore=false'
-        BASE_URL = 'https://gofillip.in'
+        BASE_URL = 'https://gofillip.in'   // <-- REPLACE THIS with your site if different
     }
-
     stages {
         stage('Checkout') {
             steps { 
                 checkout scm 
             }
         }
-
-        stage('Run AddToCart Test') {
+        stage('Run one test') {
             steps {
                 sh '''
-                    set -eu
-
-                    echo "Java version:"
-                    java -version
-
-                    echo "Maven version:"
-                    mvn -version
-
-                    echo "Chrome version:"
-                    google-chrome --version
-
-                    echo "Chromedriver version:"
-                    chromedriver --version
-
-                    # Run only AddToCart test headlessly
-                    mvn clean test \
-                        -Dtest=AddToCart \
-                        -Dheadless=true \
-                        -Dchrome.options="--headless=new --no-sandbox --disable-dev-shm-usage --window-size=1920,1080" \
-                        -DbaseUrl=${BASE_URL}
+                set -eu
+                google-chrome --version
+                chromedriver --version
+                mvn -B clean test \
+                    -Dtest=AddToCart \
+                    -Dheadless=true \
+                    -Dchrome.options="--headless=new --no-sandbox --disable-dev-shm-usage --window-size=1920,1080" \
+                    -DbaseUrl="${BASE_URL}"
                 '''
             }
         }
     }
-
     post {
         always {
-            // Save test reports and screenshots
             junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
             archiveArtifacts allowEmptyArchive: true, artifacts: 'target/screenshots/**/*.png'
         }
