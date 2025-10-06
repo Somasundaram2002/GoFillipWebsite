@@ -1,36 +1,43 @@
 pipeline {
-    agent {
-        docker {
-            image 'somasundaram2002/my-maven-chrome:latest'
-            args '--shm-size=2g'
-        }
+    agent any
+
+    environment {
+        BASE_URL = "https://gofillip.in" // Replace if your URL is different
+        DOCKER_IMAGE = "somasundaram2002/my-maven-chrome:stable"
     }
-    options { 
-        timestamps() 
-        timeout(time: 20, unit: 'MINUTES') 
-    }
+
     stages {
+
         stage('Checkout') {
-            steps { 
-                checkout scm 
+            steps {
+                checkout scm
             }
         }
-        stage('Run AddToCart Test') {
+
+        stage('Run Tests in Docker') {
             steps {
-                sh '''
-                    set -e
-                    mvn clean test -Dtest=AddToCart \
-                        -Dheadless=true \
-                        -Dchrome.options="--headless=new --no-sandbox --disable-dev-shm-usage --window-size=1920,1080" \
-                        -DbaseUrl="${BASE_URL:-https://gofillip.in}"
-                '''
+                script {
+                    docker.image(DOCKER_IMAGE).inside('-u root -v $WORKSPACE:/workspace') {
+                        sh '''
+                            cd /workspace
+                            mvn clean test -Dtest=AddToCart \
+                            -Dheadless=true \
+                            -Dchrome.options=--headless=new \
+                            --no-sandbox \
+                            --disable-dev-shm-usage \
+                            --window-size=1920,1080 \
+                            -DbaseUrl=$BASE_URL
+                        '''
+                    }
+                }
             }
         }
     }
+
     post {
         always {
-            junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
-            archiveArtifacts allowEmptyArchive: true, artifacts: 'target/screenshots/**/*.png'
+            junit 'target/surefire-reports/*.xml'
+            archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
         }
     }
 }
