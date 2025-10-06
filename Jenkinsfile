@@ -1,7 +1,7 @@
 pipeline {
 agent {
 docker {
-image 'selenium/standalone-chrome:latest'
+image 'markhobson/maven-chrome:latest'
 args '--shm-size=2g -t'
 }
 }
@@ -11,9 +11,7 @@ BASE_URL = 'https://gofillip.in'
 MAVEN_OPTS = '-Dmaven.test.failure.ignore=false'
 }
 stages {
-stage('Checkout') {
-steps { checkout scm }
-}
+stage('Checkout') { steps { checkout scm } }
 stage('Run one test') {
 steps {
 sh '''
