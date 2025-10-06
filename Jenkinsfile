@@ -1,11 +1,16 @@
 pipeline {
-agent any
+agent {
+docker {
+image 'selenium/standalone-chrome:latest'
+args '--shm-size=2g -t'
+}
+}
 
 options { timestamps(); timeout(time: 20, unit: 'MINUTES') }
 
 environment {
 BASE_URL = 'https://gofillip.in'
-DOCKER_IMAGE = 'somasundaram2002/my-maven-chrome:stable'
+MAVEN_OPTS = '-Dmaven.test.failure.ignore=false'
 }
 
 stages {
@@ -15,12 +20,6 @@ steps { checkout scm }
 
 text
 stage('Run one test') {
-  agent {
-    docker {
-      image "${DOCKER_IMAGE}"
-      args '--shm-size=2g -t -u 1000:1000'
-    }
-  }
   steps {
     sh '''
       set -eu
