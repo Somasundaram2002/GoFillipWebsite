@@ -1,10 +1,11 @@
 pipeline {
     agent {
-        docker {
-            image 'somasundaram2002/my-maven-chrome:latest'
-            args '--shm-size=2g -t'
-        }
+    docker {
+        image 'somasundaram2002/my-maven-chrome:latest'
+        args '--shm-size=2g'
     }
+}
+
 
     options { 
         timestamps()
