@@ -2,13 +2,13 @@ pipeline {
     agent {
         docker {
             image 'somasundaram2002/my-maven-chrome:latest'
-            args '--shm-size=2g'
+            args '--shm-size=2g -t'
         }
     }
 
-    options {
+    options { 
         timestamps()
-        timeout(time: 20, unit: 'MINUTES')
+        timeout(time: 20, unit: 'MINUTES') 
     }
 
     environment {
@@ -18,35 +18,34 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps {
-                checkout scm
+            steps { 
+                checkout scm 
             }
         }
 
         stage('Run AddToCart Test') {
             steps {
                 sh '''
-                set -eu
+                    set -eu
 
-                echo "Chrome version:"
-                google-chrome --version
+                    echo "Java version:"
+                    java -version
 
-                echo "Chromedriver version:"
-                chromedriver --version
+                    echo "Maven version:"
+                    mvn -version
 
-                echo "Maven version:"
-                mvn --version
+                    echo "Chrome version:"
+                    google-chrome --version
 
-                # Wait a few seconds to let Chrome start properly
-                echo "Waiting for Chrome to initialize..."
-                sleep 5
+                    echo "Chromedriver version:"
+                    chromedriver --version
 
-                # Run only AddToCart test
-                mvn -B clean test \
-                    -Dtest=AddToCart \
-                    -Dheadless=true \
-                    -Dchrome.options="--headless=new --no-sandbox --disable-dev-shm-usage --window-size=1920,1080" \
-                    -DbaseUrl="${BASE_URL}"
+                    # Run only AddToCart test headlessly
+                    mvn clean test \
+                        -Dtest=AddToCart \
+                        -Dheadless=true \
+                        -Dchrome.options="--headless=new --no-sandbox --disable-dev-shm-usage --window-size=1920,1080" \
+                        -DbaseUrl=${BASE_URL}
                 '''
             }
         }
@@ -54,6 +53,7 @@ pipeline {
 
     post {
         always {
+            // Save test reports and screenshots
             junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
             archiveArtifacts allowEmptyArchive: true, artifacts: 'target/screenshots/**/*.png'
         }
