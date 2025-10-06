@@ -1,36 +1,36 @@
 pipeline {
     agent {
         docker {
-            image 'somasundaram2002/my-maven-chrome:latest'  // Your Docker image with Maven + Chrome + Chromedriver
-            args '--shm-size=2g -t'
+            image 'somasundaram2002/my-maven-chrome:latest'
+            args '--shm-size=2g'
         }
     }
-    environment {
-        BASE_URL = 'https://gofillip.in'  // Replace if your site is different
+    options { 
+        timestamps() 
+        timeout(time: 20, unit: 'MINUTES') 
     }
     stages {
         stage('Checkout') {
-            steps {
-                checkout scm
+            steps { 
+                checkout scm 
             }
         }
         stage('Run AddToCart Test') {
             steps {
                 sh '''
-                set -eu
-                echo "Chrome version:"
-                google-chrome --version
-                echo "Chromedriver version:"
-                chromedriver --version
-                echo "Running Maven test..."
-                mvn clean test -Dtest=AddToCart -DbaseUrl=${BASE_URL}
+                    set -e
+                    mvn clean test -Dtest=AddToCart \
+                        -Dheadless=true \
+                        -Dchrome.options="--headless=new --no-sandbox --disable-dev-shm-usage --window-size=1920,1080" \
+                        -DbaseUrl="${BASE_URL:-https://gofillip.in}"
                 '''
             }
         }
     }
     post {
         always {
-            junit 'target/surefire-reports/*.xml'
+            junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'target/screenshots/**/*.png'
         }
     }
 }
