@@ -1,0 +1,44 @@
+name: SignUp class
+
+on:
+  push:
+    paths:
+      - 'src/test/java/org/example/SignUp.java'
+  pull_request:
+    paths:
+      - 'src/test/java/org/example/SignUp.java'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 12 * * *'
+    
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Print who triggered this
+        run: echo "Triggered by ${{ github.actor }}"
+
+      - name: Print branch name
+        run: echo "Running on branch ${{ github.ref_name }}"
+
+      - name: Print repository name
+        run: echo "Repository: ${{ github.repository }}"
+        
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Install Chrome
+        run: choco install googlechrome --no-progress
+
+      - name: Build and run tests
+        run: mvn -B -ntp clean verify
