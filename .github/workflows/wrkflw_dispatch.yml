@@ -1,0 +1,47 @@
+name: Run tests by input
+
+on:
+  workflow_dispatch:
+    inputs:
+      mavenProfile:
+        description: 'Select Maven profile to run'
+        required: true
+        type: choice
+        options: [web, android, ios, unit-test]
+        default: web
+      remoteURL:
+        description: 'Remote Selenium/Grid URL (leave default for local)'
+        required: true
+        type: string
+        default: 'http://localhost:4444/wd/hub'
+
+run-name: "Tests: ${{ inputs.mavenProfile }} by @${{ github.actor }}"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Show chosen inputs
+        run: echo "${{ toJSON(github.event.inputs) }}"
+        # Helpful to confirm values in logs [prints JSON]
+
+      - name: Run Maven tests with profile and remote URL
+        env:
+          REMOTE_URL: ${{ inputs.remoteURL }}
+          PROFILE: ${{ inputs.mavenProfile }}
+        run: |
+          echo "Profile: $PROFILE"
+          echo "Remote URL: $REMOTE_URL"
+          mvn -B -ntp clean verify -P "$PROFILE" -Dselenium.remoteUrl="$REMOTE_URL"
