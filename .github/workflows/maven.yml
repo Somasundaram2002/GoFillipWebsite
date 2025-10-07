@@ -16,6 +16,13 @@ on:
     paths:
       - 'src/test/java/org/example/SignUp.java'
 
+ 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+     
+
 jobs:
   build:
 
