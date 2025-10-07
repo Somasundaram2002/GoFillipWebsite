@@ -12,7 +12,7 @@ public class SignUp extends BaseClass{
         Thread.sleep(2000);
         driver.findElement(By.xpath("//h1[text()=\"Sign in to Gofillip\"]"));
 
-        driver.findElement(By.id("identifier-field")).sendKeys("samplemail@gmail.com");
+        driver.findElement(By.id("identifier-field")).sendKeys("context@gmail.com");
         driver.findElement(By.xpath("//span[text()=\"Continue\"]")).click();
         Thread.sleep(2000);
 
