@@ -1,4 +1,4 @@
-name: SignUp class
+name: Run for ${{ github.repository }} by ${{ github.actor }}
 
 on:
   push:
@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Print who triggered this
         run: echo "Triggered by ${{ github.actor }}"
+
+      - name: Print what event triggered this run
+        run: echo "Event Triggered because of ${{ github.event_name }}"
 
       - name: Print branch name
         run: echo "Running on branch ${{ github.ref_name }}"
