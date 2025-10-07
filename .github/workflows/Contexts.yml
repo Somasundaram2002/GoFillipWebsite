@@ -23,11 +23,7 @@ jobs:
 
       - name: Print branch name
         run: echo "Running on branch ${{ github.ref_name }}"
-
-      - name: Print repository name
-        run: echo "Repository: ${{ github.repository }}"
         
-    steps:
       - uses: actions/checkout@v4
 
       - name: Set up JDK 17
