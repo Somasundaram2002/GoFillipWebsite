@@ -1,4 +1,4 @@
-name: Run for ${{ github.repository }} by ${{ github.actor }}
+name: Run contactus Workflow
 
 on:
   push:
