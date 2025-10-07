@@ -39,6 +39,7 @@ jobs:
       - name: Install Chrome
         run: choco install googlechrome --no-progress
 
-      - name: Build and run tests
-        run: mvn -B -ntp test -Dtest=ContactUs
+      - name: Run ContactUs tests
+        run: mvn -B -ntp test -Dtest=ContactUs -Durl=https://gofillip.in/
+
 
