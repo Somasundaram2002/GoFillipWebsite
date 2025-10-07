@@ -49,5 +49,15 @@ jobs:
           echo "REMOTE_URL=${{ inputs.remoteURL || 'http://localhost:4444/wd/hub' }}" >> "$GITHUB_ENV"
         # For schedule/push, inputs are null; || applies safe defaults [web:248].
 
+      - name: Restore Maven cache
+        uses: skjolber/maven-cache-github-action@v3.1.1
+        with:
+          step: restore
+          
       - name: Build and run tests
         run: mvn -B -ntp clean verify -P "$PROFILE" -Dselenium.remoteUrl="$REMOTE_URL"
+
+      - name: Save Maven cache
+        uses: skjolber/maven-cache-github-action@v3.1.1
+        with:
+          step: save  
