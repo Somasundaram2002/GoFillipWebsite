@@ -19,7 +19,7 @@ public class SignUp extends BaseClass{
     try {
         String errorMessage = driver.findElement(By.id("error-identifier")).getText();
         System.err.println(errorMessage);
-        System.out.println("Passed : Unregistered email address couldn't Sign in");
+        System.out.println("Passed : Unregistered email address cant Sign in");
     } catch (Exception e) {
     System.out.println("BUG : Unregistered email address signed in");
     }
