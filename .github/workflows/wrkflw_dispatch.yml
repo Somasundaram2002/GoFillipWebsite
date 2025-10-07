@@ -1,28 +1,34 @@
-name: Run tests by input
+name: Java CI with Maven
 
 on:
+  push:
+    paths:
+      - 'src/test/java/org/example/SignUp.java'
+  pull_request:
+    paths:
+      - 'src/test/java/org/example/SignUp.java'
+  schedule:
+    - cron: '0 12 * * *'   # 12:00 UTC
   workflow_dispatch:
     inputs:
       mavenProfile:
-        description: 'Select Maven profile to run'
-        required: true
+        description: 'Maven profile to run'
+        required: false
         type: choice
         options: [web, android, ios, unit-test]
         default: web
       remoteURL:
-        description: 'Remote Selenium/Grid URL (leave default for local)'
-        required: true
+        description: 'Selenium Grid URL'
+        required: false
         type: string
         default: 'http://localhost:4444/wd/hub'
-
-run-name: "Tests: ${{ inputs.mavenProfile }} by @${{ github.actor }}"
 
 permissions:
   contents: read
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -33,15 +39,15 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Show chosen inputs
-        run: echo "${{ toJSON(github.event.inputs) }}"
-        # Helpful to confirm values in logs [prints JSON]
+      - name: Install Chrome
+        run: choco install googlechrome --no-progress
 
-      - name: Run Maven tests with profile and remote URL
-        env:
-          REMOTE_URL: ${{ inputs.remoteURL }}
-          PROFILE: ${{ inputs.mavenProfile }}
+      - name: Resolve inputs with defaults
+        id: vars
         run: |
-          echo "Profile: $PROFILE"
-          echo "Remote URL: $REMOTE_URL"
-          mvn -B -ntp clean verify -P "$PROFILE" -Dselenium.remoteUrl="$REMOTE_URL"
+          echo "PROFILE=${{ inputs.mavenProfile || 'web' }}" >> "$GITHUB_ENV"
+          echo "REMOTE_URL=${{ inputs.remoteURL || 'http://localhost:4444/wd/hub' }}" >> "$GITHUB_ENV"
+        # For schedule/push, inputs are null; || applies safe defaults [web:248].
+
+      - name: Build and run tests
+        run: mvn -B -ntp clean verify -P "$PROFILE" -Dselenium.remoteUrl="$REMOTE_URL"
