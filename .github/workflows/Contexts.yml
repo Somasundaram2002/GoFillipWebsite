@@ -3,10 +3,10 @@ name: SignUp class
 on:
   push:
     paths:
-      - 'src/test/java/org/example/SignUp.java'
+      - 'src/test/java/org/example/ContactUs.java'
   pull_request:
     paths:
-      - 'src/test/java/org/example/SignUp.java'
+      - 'src/test/java/org/example/ContactUs.java'
   workflow_dispatch:
   schedule:
     - cron: '0 12 * * *'
