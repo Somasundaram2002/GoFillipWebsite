@@ -20,7 +20,7 @@ public class BaseClass {
     public void setUp() {
         // Read config from system properties with safe defaults
         String baseUrl = System.getProperty("baseUrl", "https://gofillip.in/");
-        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "true"));
+        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
         String extraOpts = System.getProperty("chrome.options", "--no-sandbox --disable-dev-shm-usage --window-size=1920,1080");
 
         // Resolve ChromeDriver automatically
