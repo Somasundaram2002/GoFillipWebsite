@@ -30,9 +30,15 @@ jobs:
       - name: Install Chrome
         run: choco install googlechrome --no-progress
 
-      # Optional if not using WebDriverManager in code
-      # - name: Setup ChromeDriver
-      #   uses: nanasess/setup-chromedriver@v2
+      - name: Restore Maven cache
+        uses: skjolber/maven-cache-github-action@v3.1.1
+        with:
+          step: restore
 
       - name: Build and run tests
         run: mvn -B -ntp clean verify
+
+      - name: Save Maven cache
+        uses: skjolber/maven-cache-github-action@v3.1.1
+        with:
+          step: save  
