@@ -37,9 +37,9 @@ public class ContactUs extends BaseClass{
         Thread.sleep(2000); // keep as-is to match current style
 
         String[][] cases = {
-                {"", "tsksomu11@gmail.com", "9176636750", "Testing Purpose", "name"},            // empty name
-                {"Somasundaram", "", "9176636750", "Testing Purpose", "email"},                   // empty email
-                {"Somasundaram", "invalidgmail.com", "9176636750", "Testing Purpose", "email"},   // invalid email (missing @)
+                {"", "tsksomu11@gmail.com", "9176636750", "Testing Purpose github", "name"},            // empty name
+                {"Somasundaram", "", "9176636750", "Testing Purpose github", "email"},                   // empty email
+                {"Somasundaram", "invalidgmail.com", "9176636750", "Testing Purpose github", "email"},   // invalid email (missing @)
                 {"Somasundaram", "tsksomu11@gmail.com", "", "Testing Purpose github", "phoneNo"},        // empty phone
                 {"Somasundaram", "tsksomu11@gmail.com", "9176636750", "", "message"}              // empty message
         };
