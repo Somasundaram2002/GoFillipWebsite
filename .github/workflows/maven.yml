@@ -7,28 +7,30 @@ on:
   pull_request:
     paths:
       - 'src/test/java/org/example/SignUp.java'
+  workflow_dispatch:
 
 permissions:
   contents: read
-  actions: read
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      DEPENDENCY_SUBMISSION_ENABLED: false
-
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
+          distribution: temurin
           java-version: '17'
-          distribution: 'temurin'
           cache: maven
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Install Chrome
+        run: choco install googlechrome --no-progress
+
+      # Optional if not using WebDriverManager in code
+      # - name: Setup ChromeDriver
+      #   uses: nanasess/setup-chromedriver@v2
+
+      - name: Build and run tests
+        run: mvn -B -ntp clean verify
