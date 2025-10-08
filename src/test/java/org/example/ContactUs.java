@@ -41,7 +41,7 @@ public class ContactUs extends BaseClass{
                 {"Somasundaram", "", "9176636750", "Testing Purpose github", "email"},                   // empty email
                 {"Somasundaram", "invalidgmail.com", "9176636750", "Testing Purpose github", "email"},   // invalid email (missing @)
                 {"Somasundaram", "tsksomu11@gmail.com", "", "Testing Purpose github", "phoneNo"},        // empty phone
-                {"Somasundaram", "tsksomu11@gmail.com", "9176636750", "", "mssage"}              // empty message
+                {"Somasundaram", "tsksomu11@gmail.com", "9176636750", "", "message"}              // empty message
         };
 
         for (String[] tc : cases) {
