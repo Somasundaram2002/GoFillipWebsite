@@ -15,7 +15,7 @@
         <surefire.version>3.2.5</surefire.version>
         <selenium.version>4.35.0</selenium.version>
         <testng.version>7.11.0</testng.version>
-        <wdm.version>5.9.2</wdm.version>
+        <wdm.version>5.9.3</wdm.version>
     </properties>
 
     <dependencies>
