@@ -50,7 +50,7 @@ jobs:
         # For schedule/push, inputs are null; || applies safe defaults [web:248].
 
       - name: Restore Maven cache
-        uses: skjolber/maven-cache-github-action@v3.1.1
+        uses: skjolber/maven-cache-github-action@v3.1.2
         with:
           step: restore
           
@@ -58,6 +58,6 @@ jobs:
         run: mvn -B -ntp clean verify -P "$PROFILE" -Dselenium.remoteUrl="$REMOTE_URL"
 
       - name: Save Maven cache
-        uses: skjolber/maven-cache-github-action@v3.1.1
+        uses: skjolber/maven-cache-github-action@v3.1.2
         with:
           step: save  
